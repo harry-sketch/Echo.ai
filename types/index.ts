@@ -1,3 +1,5 @@
+import type { ConnectionService } from "@/services/connection-service";
+
 export type TConectionType =
   | "disconnected"
   | "error"
@@ -5,7 +7,8 @@ export type TConectionType =
   | "connected";
 
 export interface IEchoState {
+  connectionServiceInstance: ConnectionService | null;
   connectionState: TConectionType;
   error: string;
-  onConect: () => void;
+  onConect: () => Promise<void>;
 }
