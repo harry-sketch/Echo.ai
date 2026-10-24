@@ -8,7 +8,7 @@ export const useEchoStore = create<IEchoState>()(
     connectionServiceInstance: null,
     connectionState: "disconnected",
     error: "",
-    onConect: async () => {
+    onConnect: async () => {
       const state = get();
 
       const isConnecting = state.connectionState === "connecting";
@@ -28,7 +28,7 @@ export const useEchoStore = create<IEchoState>()(
         set({ error: "Microphone Perimission Denied!!!!" });
       }
 
-      // Info -==> Create s singleton Service pattern
+      // Info -==> Create a singleton Service pattern
 
       let connectionManager = state.connectionServiceInstance;
 
@@ -39,7 +39,7 @@ export const useEchoStore = create<IEchoState>()(
         });
       }
 
-      connectionManager.startConnnectService();
+      await connectionManager.startConnnectService();
     },
   })),
 );

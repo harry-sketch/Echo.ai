@@ -10,5 +10,5 @@ export interface IEchoState {
   connectionServiceInstance: ConnectionService | null;
   connectionState: TConectionType;
   error: string;
-  onConect: () => Promise<void>;
+  onConnect: () => Promise<void>;
 }

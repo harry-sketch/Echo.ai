@@ -1,5 +1,6 @@
 import type { LiveServerMessage, Session } from "@google/genai";
-import { GoogleGenAI, Modality } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
+import { config, model } from "../lib/constants";
 
 export class ConnectionService {
   private ai: GoogleGenAI;
@@ -7,29 +8,22 @@ export class ConnectionService {
 
   constructor() {
     this.ai = new GoogleGenAI({
-      apiKey: "",
+      apiKey: process.env.NEXT_PUBLIC_GOOGLE_GEMINI_API_KEY,
     });
   }
 
   async startConnnectService() {
-    const config = {
-      responseModalities: [Modality.AUDIO],
-      inputAudioTranscription: {},
-      outputAudioTranscription: {},
-      translationConfig: {
-        targetLanguageCode: "pl",
-        echoTargetLanguage: true,
-      },
-    };
-
     this.session = await this.ai.live.connect({
-      model: "",
+      model,
       config,
       callbacks: {
         onopen: () => console.log("Connection open with google gemini"),
         onmessage: (e: LiveServerMessage) => {
           console.log({ e });
         },
+
+        onerror: (e) => console.debug("Error:", e.message),
+        onclose: (e) => console.debug("Close:", e.reason),
       },
     });
 

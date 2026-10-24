@@ -1,12 +1,13 @@
 // import { Navbar } from "@/components/navbar";
 
+import ControlsPanel from "@/components/ControlPanel";
 import { Navbar } from "../components/Navbar";
 
 // import RightSidebar from "@/components/right-sidebar";
 // import LeftSidebar from "@/components/left-sidebar";
 
 // import StatusPanel from "@/components/status-panel";
-// import ControlsPanel from "@/components/controls-panel";
+
 // import VisualizationPanel from "@/components/visualization-panel";
 
 const App = () => {
@@ -43,8 +44,7 @@ const App = () => {
           {/* Bottom Controls */}
           <div className="absolute bottom-6 md:bottom-8 left-0 right-0 flex justify-center z-20 px-4 pointer-events-none">
             <div className="pointer-events-auto">
-              {/* <ControlsPanel /> */}
-              control-panel
+              <ControlsPanel />
             </div>
           </div>
         </main>

@@ -22,6 +22,9 @@
   "linter": {
     "enabled": true,
     "rules": {
+      "a11y": {
+        "noAriaHiddenOnFocusable": "off"
+      },
       "recommended": true
     },
     "domains": {
