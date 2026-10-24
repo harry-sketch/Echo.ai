@@ -9,3 +9,6 @@ export const config = {
     echoTargetLanguage: true,
   },
 };
+
+export const INPUT_SAMPLE_RATE = 16000;
+export const OUTPUT_SAMPLE_RATE = 32000;
