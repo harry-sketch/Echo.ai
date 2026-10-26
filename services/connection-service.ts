@@ -6,6 +6,7 @@ import {
   model,
   OUTPUT_SAMPLE_RATE,
 } from "../lib/constants";
+import { createPcmBlob } from "../lib/utils";
 
 export class ConnectionService {
   private ai: GoogleGenAI;
@@ -82,7 +83,13 @@ export class ConnectionService {
     );
 
     this.outputAudioWorkletNode.port.onmessage = (e) => {
-      console.log("RECEIVED", e.data);
+      const data = createPcmBlob(e.data as Float32Array);
+
+      if (this.session) {
+        this.session.sendRealtimeInput({
+          audio: data,
+        });
+      }
     };
 
     this.inputMediaStreamSourceNode.connect(this.outputAudioWorkletNode);
