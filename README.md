@@ -2,5 +2,8 @@ An AI Voice modal which can talk in more then 10 languages with basic, intermedi
 
 
 
-<img width="1684" height="763" alt="Screenshot 2026-11-05 at 9 47 18 PM" src="https://github.com/user-attachments/assets/1c69e90f-e00f-44a4-8dac-c859f5f1be21" />
+
+
+
+<img width="1800" height="873" alt="Screenshot 2026-11-05 at 9 51 17 PM" src="https://github.com/user-attachments/assets/bfaf8a28-d4c9-4840-8517-35201d71f177" />
 
