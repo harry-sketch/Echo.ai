@@ -69,6 +69,7 @@ export class ConnectionService {
         echoCancellation: true,
         noiseSuppression: true,
         sampleRate: INPUT_SAMPLE_RATE,
+        autoGainControl: true,
       },
     });
 
