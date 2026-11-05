@@ -6,7 +6,11 @@ import {
   model,
   OUTPUT_SAMPLE_RATE,
 } from "../lib/constants";
-import { createPcmBlob } from "../lib/utils";
+import {
+  changeBase64To8Bit,
+  createPcmBlob,
+  decodeAudioData,
+} from "../lib/utils";
 
 export class ConnectionService {
   private ai: GoogleGenAI;
@@ -17,6 +21,8 @@ export class ConnectionService {
   private mediaStream: MediaStream | null = null;
   private outputAudioWorkletNode: AudioWorkletNode | null = null;
   private inputMediaStreamSourceNode: MediaStreamAudioSourceNode | null = null;
+  private sources = new Set<AudioBufferSourceNode>();
+  private nextPlayTime: number = 0;
 
   constructor() {
     this.ai = new GoogleGenAI({
@@ -30,16 +36,12 @@ export class ConnectionService {
       config,
       callbacks: {
         onopen: () => console.log("Connection open with google gemini"),
-        onmessage: (e: LiveServerMessage) => {
-          console.log({ e });
-        },
+        onmessage: this.handleMessage.bind(this),
 
         onerror: (e) => console.debug("Error:", e.message),
         onclose: (e) => console.debug("Close:", e.reason),
       },
     });
-
-    console.log(this.session);
 
     this.inputAudioContext = new AudioContext({
       sampleRate: INPUT_SAMPLE_RATE,
@@ -93,5 +95,43 @@ export class ConnectionService {
     };
 
     this.inputMediaStreamSourceNode.connect(this.outputAudioWorkletNode);
+  }
+
+  handleMessage(e: LiveServerMessage) {
+    const serverContent = e.serverContent;
+
+    const data = serverContent?.modelTurn?.parts?.[0].inlineData?.data;
+
+    if (data) {
+      this.handlePlayAudioChunk(data);
+    }
+  }
+
+  handlePlayAudioChunk(data: string) {
+    const unit8Array = changeBase64To8Bit(data);
+
+    if (!this.outputAudioContext || !this.outputGainNode) return;
+
+    const audioBuffer = decodeAudioData(unit8Array, this.outputAudioContext);
+
+    if (this.nextPlayTime < this.outputAudioContext.currentTime) {
+      this.nextPlayTime = this.outputAudioContext.currentTime;
+    }
+
+    const source = this.outputAudioContext.createBufferSource();
+
+    source.buffer = audioBuffer;
+
+    source.connect(this.outputGainNode);
+
+    source.start(this.nextPlayTime);
+
+    this.nextPlayTime += audioBuffer.duration;
+
+    source.addEventListener("ended", () => {
+      this.sources.delete(source);
+    });
+
+    this.sources.add(source);
   }
 }

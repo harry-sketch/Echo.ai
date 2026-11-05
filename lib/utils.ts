@@ -47,7 +47,7 @@ export const changeBase64To8Bit = (data: string): Uint8Array => {
 export const decodeAudioData = (
   unit8Array: Uint8Array,
   ctx: AudioContext,
-  numofChannel: number,
+  numofChannel: number = 1,
 ): AudioBuffer => {
   const int16ArrayBuffer = new Int16Array(unit8Array.buffer);
 
