@@ -1,24 +1,18 @@
-// import { Navbar } from "@/components/navbar";
-
 import ControlsPanel from "@/components/ControlPanel";
+import StatusPanel from "@/components/StatusPanel";
 import { Navbar } from "../components/Navbar";
-
-// import RightSidebar from "@/components/right-sidebar";
-// import LeftSidebar from "@/components/left-sidebar";
-
-// import StatusPanel from "@/components/status-panel";
-
-// import VisualizationPanel from "@/components/visualization-panel";
+import RightSidebar from "../components/RightSidebar";
+import VisualizationPanel from "../components/VisualizationPanel";
+import LeftSidebar from "../components/LeftSidebar";
 
 const App = () => {
   return (
-    <div className="h-dvh w-full flex flex-col overflow-hidden">
+    <div className="h-dvh w-full flex flex-col overflow-hidden bg-black text-white">
       <Navbar />
 
       <div className="flex flex-1 overflow-hidden relative">
         <div className="hidden lg:flex flex-col h-full flex-none w-80 border-r">
-          {/* <LeftSidebar /> */}
-          left sidebar
+          <LeftSidebar />
         </div>
 
         <main className="flex-1 relative flex flex-col min-w-0 overflow-hidden">
@@ -28,20 +22,15 @@ const App = () => {
               backgroundImage: "radial-gradient(#fff 1px, transparent 1px)",
               backgroundSize: "20px 20px",
             }}
-          ></div>
-          {/* Top Status Bar */}
+          />
           <div className="absolute top-4 left-0 right-0 z-10 flex justify-center pointer-events-none">
-            {/* <StatusPanel /> */}
-            status panel
+            <StatusPanel />
           </div>
 
-          {/* Center Visualization (Takes available space) */}
           <div className="flex-1 w-full h-full flex items-center justify-center">
-            {/* <VisualizationPanel /> */}
-            Visualization
+            <VisualizationPanel />
           </div>
 
-          {/* Bottom Controls */}
           <div className="absolute bottom-6 md:bottom-8 left-0 right-0 flex justify-center z-20 px-4 pointer-events-none">
             <div className="pointer-events-auto">
               <ControlsPanel />
@@ -50,8 +39,7 @@ const App = () => {
         </main>
 
         <div className="hidden lg:flex flex-col h-full flex-none w-80 border-l">
-          {/* <RightSidebar /> */}
-          right sidebar
+          <RightSidebar />
         </div>
       </div>
     </div>

@@ -22,6 +22,9 @@
   "linter": {
     "enabled": true,
     "rules": {
+      "suspicious": {
+        "noAssignInExpressions": "off"
+      },
       "a11y": {
         "noAriaHiddenOnFocusable": "off"
       },
