@@ -102,6 +102,12 @@ export class ConnectionService {
 
     const data = serverContent?.modelTurn?.parts?.[0].inlineData?.data;
 
+    const interuppted = serverContent?.interrupted;
+
+    if (interuppted) {
+      this.handleStopAudioChunk();
+    }
+
     if (data) {
       this.handlePlayAudioChunk(data);
     }
@@ -133,5 +139,19 @@ export class ConnectionService {
     });
 
     this.sources.add(source);
+  }
+
+  handleStopAudioChunk() {
+    this.sources.forEach((source) => {
+      try {
+        source.stop();
+      } catch {}
+    });
+
+    this.sources.clear();
+
+    if (this.outputAudioContext) {
+      this.nextPlayTime = this.outputAudioContext?.currentTime;
+    }
   }
 }
