@@ -46,29 +46,31 @@ export const useEchoStore = create<IEchoState>()(
         connectionManager = new ConnectionService({
           setConnectionState: (connectionState) => set({ connectionState }),
           onError: (err) => set({ error: err }),
-          audioTranscription: (sender, transcription, isPartial) => {
+          audioTranscription: (sender, transcript, isPartial) => {
             return set((state) => {
               const newTranscript = [...state.transcription];
 
               const isPartialIndex = newTranscript.findLastIndex(
-                (item) => item.sender === sender && isPartial,
+                (item) => item.sender === sender && item.isPartial,
               );
 
               if (isPartialIndex !== -1) {
                 newTranscript[isPartialIndex] = {
                   ...newTranscript[isPartialIndex],
-                  transcription,
+                  transcript,
                   isPartial,
                 };
 
                 return { transcription: newTranscript };
               } else {
-                newTranscript.push({
-                  id: crypto.randomUUID(),
-                  sender,
-                  transcription,
-                  isPartial,
-                });
+                if (transcript) {
+                  newTranscript.push({
+                    id: crypto.randomUUID(),
+                    sender,
+                    transcript,
+                    isPartial,
+                  });
+                }
 
                 return { transcription: newTranscript };
               }

@@ -34,7 +34,8 @@ function RightSidebar() {
               </div>
             ) : (
               transcription.map((message, i) => {
-                const cleanedText = cleanText(message.transcription);
+                const cleanedText = cleanText(message.transcript);
+
                 if (!cleanedText && !message.isPartial) return null;
                 const isUser = message.sender === "user";
                 return (

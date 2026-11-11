@@ -9,7 +9,7 @@ export type TConectionType =
 export interface TTranscriptionItem {
   id: string;
   sender: "user" | "model";
-  transcription: string;
+  transcript: string;
   isPartial?: boolean;
 }
 
@@ -29,7 +29,7 @@ export interface IConnectionServiceCallbacks {
   onError: (err: string) => void;
   audioTranscription: (
     sender: "user" | "model",
-    transcription: string,
+    transcript: string,
     isPartial: boolean,
   ) => void;
 }
