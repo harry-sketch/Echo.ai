@@ -1,12 +1,13 @@
 "use client";
 
-// import Image from "next/image";
+import { useEchoStore } from "../store/useEchoStore";
 import { LiveWaveform } from "./ui/live-waveform";
 import { Orb } from "./ui/orb";
 
 function VisualizationPanel() {
-  const isConnected = true;
-  const isConnecting = false;
+  const { connectionState } = useEchoStore();
+  const isConnected = connectionState === "connected";
+  const isConnecting = connectionState === "connecting";
   const agentState = "talking";
 
   // const activeScale = 1;

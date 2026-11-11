@@ -9,7 +9,9 @@ export type TConectionType =
 export interface IEchoState {
   connectionServiceInstance: ConnectionService | null;
   connectionState: TConectionType;
-  error: string;
+  error: string | null;
+  isMuted: boolean;
+  toggleMute: () => void;
   onConnect: () => Promise<void>;
 }
 

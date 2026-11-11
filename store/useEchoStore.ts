@@ -7,7 +7,16 @@ export const useEchoStore = create<IEchoState>()(
   devtools((set, get) => ({
     connectionServiceInstance: null,
     connectionState: "disconnected",
-    error: "",
+    error: null,
+    isMuted: false,
+    toggleMute: () => {
+      const state = get();
+      const currState = state.isMuted;
+
+      state.connectionServiceInstance?.handleMute(!currState);
+
+      set({ isMuted: !currState });
+    },
     onConnect: async () => {
       const state = get();
 
@@ -18,7 +27,7 @@ export const useEchoStore = create<IEchoState>()(
         return;
       }
 
-      set({ error: "" });
+      set({ error: null });
 
       try {
         await navigator.mediaDevices.getUserMedia({

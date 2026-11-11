@@ -8,13 +8,12 @@ import { Button } from "./ui/button";
 import { MicSelector } from "./ui/mic-selector";
 
 function ControlsPanel() {
-  const { onConnect, connectionState } = useEchoStore();
+  const { onConnect, connectionState, isMuted } = useEchoStore();
 
   const [selectedDevice, setSelectedDevice] = useState<string>("");
 
   const isConnected = connectionState === "connected";
   const isConnecting = connectionState === "connecting";
-  const isMuted = false;
 
   return (
     <div className="w-full max-w-[90vw] sm:max-w-fit mx-auto transition-all duration-300 ease-in-out">

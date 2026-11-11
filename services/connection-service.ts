@@ -174,4 +174,12 @@ export class ConnectionService {
       this.nextPlayTime = this.outputAudioContext?.currentTime;
     }
   }
+
+  handleMute(isMuted: boolean) {
+    if (this.mediaStream) {
+      this.mediaStream.getAudioTracks().forEach((track) => {
+        track.enabled = !isMuted;
+      });
+    }
+  }
 }
