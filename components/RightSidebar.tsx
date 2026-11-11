@@ -1,33 +1,19 @@
 "use client";
 
-import {
-  Message,
-  MessageAvatar,
-  MessageContent,
-} from "@/components/ui/message";
-
-import { cleanText } from "@/lib/utils";
+import { LucideLanguages } from "lucide-react";
+import { cleanText } from "../lib/utils";
+import { useEchoStore } from "../store/useEchoStore";
+import SidebarHeader from "./SidebarHeader";
 import {
   Conversation,
   ConversationContent,
   ConversationEmptyState,
 } from "./ui/conversation";
-import SidebarHeader from "./SidebarHeader";
-import { LucideLanguages } from "lucide-react";
+import { Message, MessageAvatar, MessageContent } from "./ui/message";
 
 function RightSidebar() {
-  const items: any[] = [
-    {
-      text: "Hii",
-      isPartial: false,
-      sender: "user",
-    },
-    {
-      text: "I'm TalkGyan AI Assistant",
-      isPartial: false,
-      sender: "assistant",
-    },
-  ];
+  const { transcription } = useEchoStore();
+
   return (
     <aside className="flex h-full w-full flex-col bg-black text-white">
       {/* Header */}
@@ -38,7 +24,7 @@ function RightSidebar() {
         <Conversation className="h-full overflow-y-auto px-3 py-2">
           {/* Tighter Vertical Spacing (space-y-2) */}
           <ConversationContent className="space-y-2">
-            {items.length === 0 ? (
+            {transcription.length === 0 ? (
               <div className="flex h-full flex-col items-center justify-center opacity-50">
                 <ConversationEmptyState
                   title=""
@@ -47,8 +33,8 @@ function RightSidebar() {
                 />
               </div>
             ) : (
-              items.map((message, i) => {
-                const cleanedText = cleanText(message.text);
+              transcription.map((message, i) => {
+                const cleanedText = cleanText(message.transcription);
                 if (!cleanedText && !message.isPartial) return null;
                 const isUser = message.sender === "user";
                 return (

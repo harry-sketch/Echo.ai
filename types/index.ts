@@ -6,6 +6,13 @@ export type TConectionType =
   | "connecting"
   | "connected";
 
+export interface TTranscriptionItem {
+  id: string;
+  sender: "user" | "model";
+  transcription: string;
+  isPartial?: boolean;
+}
+
 export interface IEchoState {
   connectionServiceInstance: ConnectionService | null;
   connectionState: TConectionType;
@@ -14,9 +21,15 @@ export interface IEchoState {
   toggleMute: () => void;
   onConnect: () => Promise<void>;
   onDisconnect: () => void;
+  transcription: TTranscriptionItem[];
 }
 
 export interface IConnectionServiceCallbacks {
   setConnectionState: (connectionState: TConectionType) => void;
   onError: (err: string) => void;
+  audioTranscription: (
+    sender: "user" | "model",
+    transcription: string,
+    isPartial: boolean,
+  ) => void;
 }

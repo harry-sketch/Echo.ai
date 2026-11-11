@@ -5,6 +5,7 @@ import { ConnectionService } from "../services/connection-service";
 
 export const useEchoStore = create<IEchoState>()(
   devtools((set, get) => ({
+    transcription: [],
     connectionServiceInstance: null,
     connectionState: "disconnected",
     error: null,
@@ -45,7 +46,36 @@ export const useEchoStore = create<IEchoState>()(
         connectionManager = new ConnectionService({
           setConnectionState: (connectionState) => set({ connectionState }),
           onError: (err) => set({ error: err }),
+          audioTranscription: (sender, transcription, isPartial) => {
+            return set((state) => {
+              const newTranscript = [...state.transcription];
+
+              const isPartialIndex = newTranscript.findLastIndex(
+                (item) => item.sender === sender && isPartial,
+              );
+
+              if (isPartialIndex !== -1) {
+                newTranscript[isPartialIndex] = {
+                  ...newTranscript[isPartialIndex],
+                  transcription,
+                  isPartial,
+                };
+
+                return { transcription: newTranscript };
+              } else {
+                newTranscript.push({
+                  id: crypto.randomUUID(),
+                  sender,
+                  transcription,
+                  isPartial,
+                });
+
+                return { transcription: newTranscript };
+              }
+            });
+          },
         });
+
         set({
           connectionServiceInstance: connectionManager,
         });

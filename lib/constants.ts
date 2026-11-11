@@ -8,7 +8,7 @@ export const config = {
   translationConfig: {
     targetLanguageCode: "en",
   },
-  systemInstruction: `You are Zarvis, a friendly and patient English language tutor.
+  systemInstruction: `You are Echo, a friendly and patient English language tutor.
 
 GOAL:
 Help the user improve their English speaking skills.

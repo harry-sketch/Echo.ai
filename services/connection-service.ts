@@ -25,12 +25,13 @@ export class ConnectionService {
   private sources = new Set<AudioBufferSourceNode>();
   private nextPlayTime: number = 0;
   private callbacks: IConnectionServiceCallbacks;
+  private inputTranscription: string = "";
+  private outputTranscription: string = "";
 
   constructor(callbacks: IConnectionServiceCallbacks) {
     this.ai = new GoogleGenAI({
       apiKey: process.env.NEXT_PUBLIC_GOOGLE_GEMINI_API_KEY,
     });
-
     this.callbacks = callbacks;
   }
 
@@ -119,6 +120,42 @@ export class ConnectionService {
 
   handleMessage(e: LiveServerMessage) {
     const serverContent = e.serverContent;
+
+    if (serverContent?.inputTranscription?.text) {
+      this.inputTranscription += serverContent?.inputTranscription.text;
+      this.callbacks.audioTranscription("user", this.inputTranscription, true);
+    }
+
+    if (serverContent?.outputTranscription?.text) {
+      this.outputTranscription += serverContent?.outputTranscription.text;
+      this.callbacks.audioTranscription(
+        "model",
+        this.outputTranscription,
+        true,
+      );
+    }
+
+    if (serverContent?.turnComplete) {
+      if (this.inputTranscription) {
+        this.callbacks.audioTranscription(
+          "user",
+          this.inputTranscription,
+          false,
+        );
+
+        this.inputTranscription = "";
+      }
+
+      if (this.outputTranscription) {
+        this.callbacks.audioTranscription(
+          "model",
+          this.outputTranscription,
+          false,
+        );
+
+        this.outputTranscription = "";
+      }
+    }
 
     const data = serverContent?.modelTurn?.parts?.[0].inlineData?.data;
 
