@@ -33,3 +33,16 @@ export interface IConnectionServiceCallbacks {
     isPartial: boolean,
   ) => void;
 }
+
+export interface ConnectConfig {
+  selected_topic: string;
+  description: string;
+
+  selected_launguage_name: string;
+  selected_launguage_code: string;
+  selected_launguage_region: string;
+
+  context: string;
+  selected_proefficency_level: string;
+  selected_assistant_voice: string;
+}

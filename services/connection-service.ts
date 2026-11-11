@@ -1,17 +1,16 @@
-import type { LiveServerMessage, Session } from "@google/genai";
-import { GoogleGenAI } from "@google/genai";
-import {
-  config,
-  INPUT_SAMPLE_RATE,
-  model,
-  OUTPUT_SAMPLE_RATE,
-} from "../lib/constants";
+import type {
+  LiveConnectConfig,
+  LiveServerMessage,
+  Session,
+} from "@google/genai";
+import { GoogleGenAI, Modality } from "@google/genai";
+import { INPUT_SAMPLE_RATE, model, OUTPUT_SAMPLE_RATE } from "../lib/constants";
 import {
   changeBase64To8Bit,
   createPcmBlob,
   decodeAudioData,
 } from "../lib/utils";
-import type { IConnectionServiceCallbacks } from "../types";
+import type { ConnectConfig, IConnectionServiceCallbacks } from "../types";
 
 export class ConnectionService {
   private ai: GoogleGenAI;
@@ -35,9 +34,23 @@ export class ConnectionService {
     this.callbacks = callbacks;
   }
 
-  async startConnnectService() {
+  async startConnnectService(connectConfig: ConnectConfig) {
     try {
       this.callbacks.setConnectionState("connecting");
+
+      const config: LiveConnectConfig = {
+        responseModalities: [Modality.AUDIO],
+        systemInstruction: this.generateSystemPrompt(connectConfig),
+        inputAudioTranscription: {},
+        outputAudioTranscription: {},
+        speechConfig: {
+          voiceConfig: {
+            prebuiltVoiceConfig: {
+              voiceName: connectConfig.selected_assistant_voice,
+            },
+          },
+        },
+      };
 
       this.session = await this.ai.live.connect({
         model,
@@ -116,6 +129,25 @@ export class ConnectionService {
       this.callbacks.setConnectionState("error");
       this.callbacks.onError("Failed to connect via Websocket");
     }
+  }
+
+  generateSystemPrompt(config: ConnectConfig) {
+    return `
+    ROLE:You are Echo, a friendly and patient expert language tutor
+
+    GOAL: Help the user improve their proficiency in ${config.selected_launguage_name} (${config.selected_launguage_region}).
+    TOPIC: ${config.selected_topic}.
+    USER LEVEL: ${config.selected_proefficency_level}.
+
+    INSTRUCTIONS:
+    1.  **Strictly** speak in ${config.selected_launguage_name}. Only use English if the user is completely stuck or asks for a translation.
+    2.  **Correction Mode**:
+        - If the user makes a grammar or pronunciation mistake, gently correct it *first*, then continue the conversation.
+        - Format: "Small tip: In ${config.selected_launguage_name} we say [Correction]. Anyway, [Response]?"
+    3.  **Conversation Flow**:
+        - Keep responses concise (1-3 sentences).
+        - Ask open-ended questions to keep the user talking.
+    `;
   }
 
   handleMessage(e: LiveServerMessage) {
