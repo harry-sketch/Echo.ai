@@ -1,3 +1,11 @@
+<img width="1800" height="1052" alt="Echo" src="https://github.com/user-attachments/assets/a208566d-d4e8-4744-877d-49f31e8e5a3a" />
+
+
+
+
+
+
+
 An AI Voice modal which can talk in more then 10 languages with basic, intermediate & advance proficiency. It uses google gemini Speech -To-Speech (STS) real time audio api. Using Audio Worker thread for processing user audio into pcm float 32 array data and then sending the float 32 array data without blockin the main thread to the main thread
 
 
