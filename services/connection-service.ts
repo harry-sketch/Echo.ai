@@ -182,4 +182,24 @@ export class ConnectionService {
       });
     }
   }
+
+  handleDisconnect() {
+    this.handleStopAudioChunk();
+    if (this.mediaStream) {
+      this.mediaStream.getAudioTracks().forEach((track) => {
+        track.stop();
+      });
+    }
+
+    if (this.session) {
+      this.session.close();
+      this.session = null;
+    }
+    this.inputMediaStreamSourceNode?.disconnect();
+    this.outputAudioWorkletNode?.disconnect();
+    this.outputAudioContext?.close();
+    this.inputAudioContext?.close();
+    this.outputGainNode?.disconnect();
+    this.callbacks.setConnectionState("disconnected");
+  }
 }

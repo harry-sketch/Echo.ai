@@ -8,7 +8,8 @@ import { Button } from "./ui/button";
 import { MicSelector } from "./ui/mic-selector";
 
 function ControlsPanel() {
-  const { onConnect, connectionState, isMuted } = useEchoStore();
+  const { onConnect, connectionState, isMuted, onDisconnect, toggleMute } =
+    useEchoStore();
 
   const [selectedDevice, setSelectedDevice] = useState<string>("");
 
@@ -31,9 +32,6 @@ function ControlsPanel() {
           <MicSelector
             value={selectedDevice}
             onValueChange={setSelectedDevice}
-            // Pass global mute state here to reflect UI changes in the selector too
-            muted={false}
-            onMutedChange={() => {}}
             disabled={isConnecting}
             className="w-full sm:w-auto"
           />
@@ -43,10 +41,9 @@ function ControlsPanel() {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2 shrink-0">
-          {/* 1. MUTE BUTTON (Visible only when Connected) */}
           {isConnected && (
             <Button
-              onClick={() => {}}
+              onClick={toggleMute}
               variant={"secondary"}
               size="icon"
               className={cn(
@@ -81,7 +78,7 @@ function ControlsPanel() {
             </Button>
           ) : (
             <Button
-              onClick={() => {}}
+              onClick={onDisconnect}
               disabled={isConnecting}
               variant="destructive"
               size="lg"

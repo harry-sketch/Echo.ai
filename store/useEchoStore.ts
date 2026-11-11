@@ -11,11 +11,11 @@ export const useEchoStore = create<IEchoState>()(
     isMuted: false,
     toggleMute: () => {
       const state = get();
-      const currState = state.isMuted;
+      const currState = !state.isMuted;
 
-      state.connectionServiceInstance?.handleMute(!currState);
+      state.connectionServiceInstance?.handleMute(currState);
 
-      set({ isMuted: !currState });
+      set({ isMuted: currState });
     },
     onConnect: async () => {
       const state = get();
@@ -52,6 +52,19 @@ export const useEchoStore = create<IEchoState>()(
       }
 
       await connectionManager.startConnnectService();
+    },
+
+    onDisconnect: () => {
+      const state = get();
+
+      if (state.connectionServiceInstance) {
+        state.connectionServiceInstance.handleDisconnect();
+      }
+
+      set({
+        connectionServiceInstance: undefined,
+        connectionState: "disconnected",
+      });
     },
   })),
 );

@@ -13,6 +13,7 @@ export interface IEchoState {
   isMuted: boolean;
   toggleMute: () => void;
   onConnect: () => Promise<void>;
+  onDisconnect: () => void;
 }
 
 export interface IConnectionServiceCallbacks {
