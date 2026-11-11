@@ -12,3 +12,8 @@ export interface IEchoState {
   error: string;
   onConnect: () => Promise<void>;
 }
+
+export interface IConnectionServiceCallbacks {
+  setConnectionState: (connectionState: TConectionType) => void;
+  onError: (err: string) => void;
+}

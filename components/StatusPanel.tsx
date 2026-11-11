@@ -2,11 +2,14 @@
 
 import { AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useEchoStore } from "../store/useEchoStore";
 
 function StatusPanel() {
-  const isConnected = true;
-  const isConnecting = false;
-  const error = false;
+  const { connectionState } = useEchoStore();
+
+  const isConnected = connectionState === "connected";
+  const isConnecting = connectionState === "connecting";
+  const error = connectionState === "error";
 
   return (
     <div className="absolute top-6 left-0 right-0 flex flex-col items-center gap-4 z-20 pointer-events-none">
@@ -29,7 +32,6 @@ function StatusPanel() {
         <div
           className={cn(
             "w-2 h-2 rounded-full",
-            // Dot Color
             isConnecting
               ? "bg-blue-500"
               : isConnected

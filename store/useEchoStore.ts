@@ -33,7 +33,10 @@ export const useEchoStore = create<IEchoState>()(
       let connectionManager = state.connectionServiceInstance;
 
       if (!connectionManager) {
-        connectionManager = new ConnectionService();
+        connectionManager = new ConnectionService({
+          setConnectionState: (connectionState) => set({ connectionState }),
+          onError: (err) => set({ error: err }),
+        });
         set({
           connectionServiceInstance: connectionManager,
         });

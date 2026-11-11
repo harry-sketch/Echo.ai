@@ -11,6 +11,7 @@ import {
   createPcmBlob,
   decodeAudioData,
 } from "../lib/utils";
+import type { IConnectionServiceCallbacks } from "../types";
 
 export class ConnectionService {
   private ai: GoogleGenAI;
@@ -23,79 +24,97 @@ export class ConnectionService {
   private inputMediaStreamSourceNode: MediaStreamAudioSourceNode | null = null;
   private sources = new Set<AudioBufferSourceNode>();
   private nextPlayTime: number = 0;
+  private callbacks: IConnectionServiceCallbacks;
 
-  constructor() {
+  constructor(callbacks: IConnectionServiceCallbacks) {
     this.ai = new GoogleGenAI({
       apiKey: process.env.NEXT_PUBLIC_GOOGLE_GEMINI_API_KEY,
     });
+
+    this.callbacks = callbacks;
   }
 
   async startConnnectService() {
-    this.session = await this.ai.live.connect({
-      model,
-      config,
-      callbacks: {
-        onopen: () => console.log("Connection open with google gemini"),
-        onmessage: this.handleMessage.bind(this),
+    try {
+      this.callbacks.setConnectionState("connecting");
 
-        onerror: (e) => console.debug("Error:", e.message),
-        onclose: (e) => console.debug("Close:", e.reason),
-      },
-    });
+      this.session = await this.ai.live.connect({
+        model,
+        config,
+        callbacks: {
+          onopen: () => {
+            console.log("Connection open with google gemini");
+            this.callbacks.setConnectionState("connected");
+          },
+          onmessage: this.handleMessage.bind(this),
 
-    this.inputAudioContext = new AudioContext({
-      sampleRate: INPUT_SAMPLE_RATE,
-    });
+          onerror: (e) => {
+            console.error(e);
+            this.callbacks.setConnectionState("error");
+            this.callbacks.onError("Error in connecting");
+          },
+          onclose: (e) => console.debug("Close:", e.reason),
+        },
+      });
 
-    this.outputAudioContext = new AudioContext({
-      sampleRate: OUTPUT_SAMPLE_RATE,
-    });
-
-    if (this.inputAudioContext.state === "suspended") {
-      this.inputAudioContext.resume();
-    }
-
-    if (this.outputAudioContext.state === "suspended") {
-      this.outputAudioContext.resume();
-    }
-
-    this.outputGainNode = this.outputAudioContext.createGain();
-
-    this.outputGainNode.connect(this.outputAudioContext.destination);
-
-    this.mediaStream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        channelCount: 1,
-        echoCancellation: true,
-        noiseSuppression: true,
+      this.inputAudioContext = new AudioContext({
         sampleRate: INPUT_SAMPLE_RATE,
-        autoGainControl: true,
-      },
-    });
+      });
 
-    this.inputMediaStreamSourceNode =
-      this.inputAudioContext.createMediaStreamSource(this.mediaStream);
+      this.outputAudioContext = new AudioContext({
+        sampleRate: OUTPUT_SAMPLE_RATE,
+      });
 
-    await this.inputAudioContext.audioWorklet.addModule(
-      "/worklets/mic-audio-processor.js",
-    );
-
-    this.outputAudioWorkletNode = new AudioWorkletNode(
-      this.inputAudioContext,
-      "mic-audio-processor",
-    );
-
-    this.outputAudioWorkletNode.port.onmessage = (e) => {
-      const data = createPcmBlob(e.data as Float32Array);
-
-      if (this.session) {
-        this.session.sendRealtimeInput({
-          audio: data,
-        });
+      if (this.inputAudioContext.state === "suspended") {
+        this.inputAudioContext.resume();
       }
-    };
 
-    this.inputMediaStreamSourceNode.connect(this.outputAudioWorkletNode);
+      if (this.outputAudioContext.state === "suspended") {
+        this.outputAudioContext.resume();
+      }
+
+      this.outputGainNode = this.outputAudioContext.createGain();
+
+      this.outputGainNode.connect(this.outputAudioContext.destination);
+
+      this.mediaStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          channelCount: 1,
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: INPUT_SAMPLE_RATE,
+          autoGainControl: true,
+        },
+      });
+
+      this.inputMediaStreamSourceNode =
+        this.inputAudioContext.createMediaStreamSource(this.mediaStream);
+
+      await this.inputAudioContext.audioWorklet.addModule(
+        "/worklets/mic-audio-processor.js",
+      );
+
+      this.outputAudioWorkletNode = new AudioWorkletNode(
+        this.inputAudioContext,
+        "mic-audio-processor",
+      );
+
+      this.outputAudioWorkletNode.port.onmessage = (e) => {
+        const data = createPcmBlob(e.data as Float32Array);
+
+        if (this.session) {
+          this.session.sendRealtimeInput({
+            audio: data,
+          });
+        }
+      };
+
+      this.inputMediaStreamSourceNode.connect(this.outputAudioWorkletNode);
+    } catch (error) {
+      console.error(error);
+      this.callbacks.setConnectionState("error");
+      this.callbacks.onError("Failed to connect via Websocket");
+    }
   }
 
   handleMessage(e: LiveServerMessage) {
