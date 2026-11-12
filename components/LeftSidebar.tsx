@@ -29,6 +29,7 @@ import {
 } from "./ui/select";
 import { ModeToggle } from "./ModeToggle";
 import SidebarHeader from "./SidebarHeader";
+import { useEchoStore } from "../store/useEchoStore";
 
 function SectionLabel({
   icon: Icon,
@@ -46,14 +47,18 @@ function SectionLabel({
 }
 
 function LeftSidebar() {
-  const disabled = false;
+  const {
+    selectedConversation,
+    selectedLanguage,
+    selectedSkillLevel,
+    selectedVoice,
+    onLanguageSelect,
+    onSkillSelect,
+    onVoiceSelect,
+  } = useEchoStore();
 
   // Modern input style matching the clean aesthetic
-  const triggerClass = cn(
-    "h-11 w-full justify-between",
-    "text-sm font-medium",
-    disabled && "opacity-50 cursor-not-allowed",
-  );
+  const triggerClass = cn("h-11 w-full justify-between", "text-sm font-medium");
 
   return (
     <aside className="flex h-full w-full flex-col bg-black text-white">
@@ -64,7 +69,10 @@ function LeftSidebar() {
         {/* Language */}
         <div>
           <SectionLabel icon={Globe}>Launguage</SectionLabel>
-          <Select value={""} onValueChange={() => {}} disabled={disabled}>
+          <Select
+            value={selectedLanguage}
+            onValueChange={(val) => onLanguageSelect(val ?? "")}
+          >
             <SelectTrigger className={triggerClass}>
               <SelectValue placeholder="Select language" />
             </SelectTrigger>
@@ -90,7 +98,10 @@ function LeftSidebar() {
         {/* Proficiency */}
         <div>
           <SectionLabel icon={GraduationCap}>Skill Level</SectionLabel>
-          <Select value={""} onValueChange={() => {}} disabled={disabled}>
+          <Select
+            value={selectedSkillLevel}
+            onValueChange={(val) => onSkillSelect(val ?? "")}
+          >
             <SelectTrigger className={triggerClass}>
               <SelectValue placeholder="Select level" />
             </SelectTrigger>
@@ -109,7 +120,7 @@ function LeftSidebar() {
         {/* Topic */}
         <div>
           <SectionLabel icon={MessageSquare}>Conversation Topic</SectionLabel>
-          <Select value={""} onValueChange={() => {}} disabled={disabled}>
+          <Select value={selectedConversation} onValueChange={() => {}}>
             <SelectTrigger className={triggerClass}>
               <SelectValue placeholder="Select topic" />
             </SelectTrigger>
@@ -126,7 +137,10 @@ function LeftSidebar() {
         {/* Voice */}
         <div>
           <SectionLabel icon={Mic}>AI Voice Persona</SectionLabel>
-          <Select value={""} onValueChange={() => {}} disabled={disabled}>
+          <Select
+            value={selectedVoice}
+            onValueChange={(val) => onVoiceSelect(val ?? "Charon")}
+          >
             <SelectTrigger className={triggerClass}>
               <SelectValue placeholder="Select voice" />
             </SelectTrigger>

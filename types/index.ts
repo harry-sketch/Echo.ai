@@ -14,6 +14,14 @@ export interface TTranscriptionItem {
 }
 
 export interface IEchoState {
+  selectedLanguage: string;
+  onLanguageSelect: (val: string) => void;
+  selectedSkillLevel: string;
+  onSkillSelect: (val: string) => void;
+  selectedConversation: string;
+  onConversationSelect: (val: string) => void;
+  selectedVoice: string;
+  onVoiceSelect: (val: string) => void;
   connectionServiceInstance: ConnectionService | null;
   connectionState: TConectionType;
   error: string | null;
@@ -42,7 +50,6 @@ export interface ConnectConfig {
   selected_launguage_code: string;
   selected_launguage_region: string;
 
-  context: string;
   selected_proefficency_level: string;
   selected_assistant_voice: string;
 }

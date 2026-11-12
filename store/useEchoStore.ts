@@ -2,9 +2,35 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import type { IEchoState } from "@/types";
 import { ConnectionService } from "../services/connection-service";
+import {
+  AVAILABLE_LANGUAGES,
+  AVAILABLE_PROFICIENCY_LEVELS,
+  AVAILABLE_TOPICS,
+  AVAILABLE_VOICES,
+} from "../lib/constants";
 
 export const useEchoStore = create<IEchoState>()(
   devtools((set, get) => ({
+    selectedConversation: AVAILABLE_TOPICS[0],
+    onConversationSelect: (val) => {
+      set({ selectedConversation: val });
+    },
+
+    selectedLanguage: AVAILABLE_LANGUAGES[0].code,
+    onLanguageSelect: (val) => {
+      set({ selectedLanguage: val });
+    },
+
+    selectedSkillLevel: AVAILABLE_PROFICIENCY_LEVELS[0].label,
+    onSkillSelect: (val) => {
+      set({ selectedSkillLevel: val });
+    },
+
+    selectedVoice: AVAILABLE_VOICES[0].name,
+    onVoiceSelect: (val) => {
+      set({ selectedVoice: val });
+    },
+
     transcription: [],
     connectionServiceInstance: null,
     connectionState: "disconnected",
@@ -83,7 +109,19 @@ export const useEchoStore = create<IEchoState>()(
         });
       }
 
-      await connectionManager.startConnnectService();
+      const selectedLang = AVAILABLE_LANGUAGES.find(
+        (lang) => lang.code === state.selectedLanguage,
+      );
+
+      await connectionManager.startConnnectService({
+        selected_assistant_voice: state.selectedVoice,
+        selected_launguage_code: selectedLang?.code || "en-US",
+        selected_launguage_name: selectedLang?.name || "English",
+        selected_launguage_region: selectedLang?.region || "US",
+        description: state.selectedConversation,
+        selected_topic: state.selectedConversation,
+        selected_proefficency_level: state.selectedSkillLevel,
+      });
     },
 
     onDisconnect: () => {

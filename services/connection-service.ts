@@ -133,7 +133,7 @@ export class ConnectionService {
 
   generateSystemPrompt(config: ConnectConfig) {
     return `
-    ROLE:You are Echo, a friendly and patient expert language tutor
+    ROLE:You are Echo, a friendly and patient expert language tutor.
 
     GOAL: Help the user improve their proficiency in ${config.selected_launguage_name} (${config.selected_launguage_region}).
     TOPIC: ${config.selected_topic}.
