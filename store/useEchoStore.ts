@@ -45,6 +45,16 @@ export const useEchoStore = create<IEchoState>()(
       set({ isMuted: currState });
     },
     onConnect: async () => {
+      const resp = await fetch("/api/token");
+
+      if (!resp.ok) {
+        throw new Error(`Http Error: ${resp.status}`);
+      }
+
+      const token = await resp.json();
+
+      console.log(token);
+
       const state = get();
 
       const isConnecting = state.connectionState === "connecting";
@@ -69,7 +79,7 @@ export const useEchoStore = create<IEchoState>()(
       let connectionManager = state.connectionServiceInstance;
 
       if (!connectionManager) {
-        connectionManager = new ConnectionService({
+        connectionManager = new ConnectionService(token, {
           setConnectionState: (connectionState) => set({ connectionState }),
           onError: (err) => set({ error: err }),
           audioTranscription: (sender, transcript, isPartial) => {

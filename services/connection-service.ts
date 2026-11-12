@@ -27,9 +27,10 @@ export class ConnectionService {
   private inputTranscription: string = "";
   private outputTranscription: string = "";
 
-  constructor(callbacks: IConnectionServiceCallbacks) {
+  constructor(token: string, callbacks: IConnectionServiceCallbacks) {
     this.ai = new GoogleGenAI({
-      apiKey: process.env.NEXT_PUBLIC_GOOGLE_GEMINI_API_KEY,
+      httpOptions: { apiVersion: "v1alpha" },
+      apiKey: token,
     });
     this.callbacks = callbacks;
   }
